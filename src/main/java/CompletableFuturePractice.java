@@ -8,12 +8,8 @@ public class CompletableFuturePractice {
         Future<String> cf = asyncMethod();
 //        cf.cancel(false);
         System.out.println("Blocking main thread");
-        try {
-            System.out.println("Unblocked and result: " + cf.get(1500, TimeUnit.MILLISECONDS));
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-            System.out.println("Timeout. Not processed.");
-        }
+        System.out.println(Thread.currentThread().getName());
+        System.out.println("Unblocked and result: " + cf.get());
 
         CompletableFuture<String> cfAcceptApply = new CompletableFuture<>();
         cfAcceptApply.complete("Hello");
@@ -88,6 +84,12 @@ public class CompletableFuturePractice {
                 .collect(Collectors.joining(" "));
         System.out.println(combined);
 
+        CompletableFuture<Integer> cff = new CompletableFuture<>();
+
+        Future<Integer> ftr = cff.thenApply(d -> d * 2);
+//        System.out.println(cff.get());
+        cff.complete(7);
+        System.out.println(ftr.get());
         System.out.println("End");
     }
 
@@ -95,7 +97,9 @@ public class CompletableFuturePractice {
         CompletableFuture<String> cf = new CompletableFuture<>();
         ExecutorService es = Executors.newCachedThreadPool();
         es.submit(() -> {
-            Thread.sleep(1000);
+            System.out.println("Blocking");
+            System.out.println(Thread.currentThread().getName());
+//            Thread.sleep(10);
 //            cf.cancel(false);
             cf.complete("Processing Finished");
             return null;
